@@ -1,0 +1,74 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: jupyter-home
+  namespace: dino
+spec:
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: kubeflow.org/v1
+kind: Notebook
+metadata:
+  annotations:
+    notebooks.kubeflow.org/server-type: jupyter
+  labels:
+    app: dino-jupyter
+  name: dino-jupyter
+  namespace: dino
+spec:
+  template:
+    spec:
+      containers:
+      - image: openedge-node1.cvt.nsn-rdnet.net:5000/dino-jupyter
+        imagePullPolicy: Always
+        name: dino-jupyter
+        env:
+        - name: NVIDIA_REQUIRE_CUDA
+          value: "cuda>=11.1"
+        resources:
+          limits:
+            cpu: "4"
+            memory: 2Gi
+            nvidia.com/gpu: "1"
+          requests:
+            cpu: "2"
+            memory: 1Gi
+            nvidia.com/gpu: "1"
+        readinessProbe:
+          exec:
+            command:
+              - ls 
+              - /tmp/model_build_ready
+          initialDelaySeconds: 5
+          periodSeconds: 5    
+        volumeMounts:
+        - mountPath: /dev/shm
+          name: dshm
+        - mountPath: /home/jovyan/dino-checkpoints
+          name: dino-checkpoints
+        - mountPath: /home/jovyan/coco-data
+          name: coco-data
+        - mountPath: /home/jovyan
+          name: jupyter-home
+      serviceAccountName: default-editor
+      volumes:
+      - emptyDir:
+          medium: Memory
+        name: dshm
+      - name: coco-checkpoints
+        persistentVolumeClaim:
+          claimName: coco-checkpoints
+          readOnly: false
+      - name: coco-data
+        persistentVolumeClaim:
+          claimName: coco-data
+          readOnly: false
+      - name: jupyter-home
+        persistentVolumeClaim:
+          claimName: jupyter-home

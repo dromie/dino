@@ -1,0 +1,30 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: kubeflow-ingress-tls
+  namespace: istio-system
+spec:
+  secretName: kubeflow-ingress-tls
+  commonName: $DOMAIN
+  dnsNames:
+  - $DOMAIN
+  issuerRef:
+    name: kubeflow-self-signing-issuer
+    kind: ClusterIssuer
+    group: cert-manager.io
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: ingress-tls
+  namespace: istio-system
+spec:
+  secretName: ingress-tls
+  commonName: $DOMAIN
+  dnsNames:
+  - $DOMAIN
+  issuerRef:
+    name: kubeflow-self-signing-issuer
+    kind: ClusterIssuer
+    group: cert-manager.io    

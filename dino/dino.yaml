@@ -1,0 +1,43 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: dino-test
+  name: dino-test
+  namespace: dino
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dino-test
+  template:
+    metadata:
+      labels:
+        app: dino-test
+    spec:
+      volumes:
+      - name: coco-data
+        persistentVolumeClaim:
+          claimName: coco-data
+      - emptyDir:
+          medium: Memory
+          sizeLimit: 512Mi
+        name: cache-volume
+      containers:
+      - image: $REGISTRY/dino-pytorch
+        imagePullPolicy: Always
+        name: dino
+        volumeMounts:
+        - mountPath: /coco-data
+          name: coco-data
+        - mountPath: /dev/shm
+          name: cache-volume
+        env:
+        - name: NVIDIA_REQUIRE_CUDA
+          value: "cuda>=11.1"
+        resources:
+          limits:
+            nvidia.com/gpu: "1"
+          requests:
+            nvidia.com/gpu: "1"

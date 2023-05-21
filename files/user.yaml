@@ -1,0 +1,9 @@
+apiVersion: kubeflow.org/v1
+kind: Profile
+metadata:
+  name: dino
+spec:
+  owner:
+    kind: User
+    name: dino@kubeflow.com
+  resourceQuotaSpec: {}

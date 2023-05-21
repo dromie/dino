@@ -1,0 +1,21 @@
+#target: dino-jupyter
+FROM public.ecr.aws/j1r0q0g6/notebooks/notebook-servers/jupyter-pytorch-cuda:v1.5.0 
+USER root
+RUN wget -O /etc/apt/preferences.d/cuda-repository-pin-600 https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/cuda-ubuntu2004.pin
+RUN apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/3bf863cc.pub
+RUN add-apt-repository "deb http://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/ /"
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -yf git build-essential libgl1-mesa-glx cuda-toolkit-11-1
+ENV CUDA_HOME=/usr/local/cuda-11.1/
+ENV CUDA_ROOT=$CUDA_HOME
+ENV PATH=$PATH:$CUDA_ROOT/bin:$HOME/bin
+ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$CUDA_ROOT/lib64
+RUN pip3 install cython 
+USER 1000
+WORKDIR /workspace
+RUN git clone https://github.com/IDEA-Research/DINO.git
+RUN pip3 install -r DINO/requirements.txt opencv-python jupyter
+ENV NVIDIA_REQUIRE_CUDA=cuda>=11.1
+ENV DINO=/workspace/DINO
+COPY jupyter_dino.ipynb /workspace/DINO/jupyter_dino.ipynb
+ENTRYPOINT ["/entrypoint.sh","/init"]
+COPY jupyter_entrypoint.sh /entrypoint.sh

@@ -1,0 +1,10 @@
+#target: dino-pytorch
+FROM alpine as downloader
+RUN wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/cuda-keyring_1.0-1_all.deb
+FROM pytorch-mine
+COPY --from=downloader /cuda-keyring_1.0-1_all.deb /tmp/
+RUN dpkg -i /tmp/cuda-keyring_1.0-1_all.deb
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -yf git build-essential cuda-11.8
+WORKDIR /workspace
+RUN git clone https://github.com/IDEA-Research/DINO.git
+RUN pip3 install cython && pip3 install -r DINO/requirements.txt
