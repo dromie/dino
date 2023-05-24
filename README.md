@@ -1,8 +1,9 @@
-Kubeflow environment for [DINO](https://github.com/IDEA-Research/DINO).
+# Kubeflow environment for [DINO](https://github.com/IDEA-Research/DINO).
 
 Tested on:
 - Ubuntu 20.04
 - Docker 20.10.7
+- nVidia Tesla T4
 
 Requirements:
 - docker.io, nvidia-container-toolkit, nvidia-docker2  installed
@@ -13,12 +14,12 @@ Requirements:
 
 apt-get install jq gettext-base docker.io nvidia-container-toolkit nvidia-docker2
 
-# Usage:
-## Download COCO 
+## Usage:
+### Download COCO 
 ```sh
 install.sh get_data
 ```
-## Install
+### Install
 ```sh
 install.sh fullstart $FQDN
 ```
@@ -34,7 +35,7 @@ Expected result:
 - prebuild pytorch container with DINO
 - prebuild pytorch jupyter container with DINO
 
-## Inference and Visualization
+### Inference and Visualization
 - (Optional) Download checkpoint(s) from [Google Drive](https://drive.google.com/drive/folders/1qD5m1NmK0kjE5hh-G17XUX751WsEG-h_) and put it to ``` /data/nfs_export/checkpoints ```
 
 - Create Notebook
@@ -45,5 +46,5 @@ Expected result:
 - login to https://$FQDN with 
     - user: dino@kubeflow.com
     - password: dinominikube
-- Check out the prepared notebook.
-    - You might need to update the checkpoint file in section 2 
+- Check out the prepared notebook (DINO/jupyter_dino.ipynb)
+    - You might need to update the checkpoint file and configuration in section 2 
